@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 
 const rouletteSchema = new mongoose.Schema({
     number: {
-        type: Number,
-        required: true
+        type: Number | null,
     },
     color: {
-        type: String,
-        required: true
+        type: String | null,
     },
     status: {
         type: Boolean,
-        required: true
+        required: true,
+        enum: ["ABIERTA", "CERRADA"],
+        default: "CERRADA"
     },
     creationDate: {
         type: Date,
@@ -19,8 +19,6 @@ const rouletteSchema = new mongoose.Schema({
     },
     closeDate: {
         type: Date,
-        default: Date.now,
-        required: true
     }
 });
 
