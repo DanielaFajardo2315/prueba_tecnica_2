@@ -1,3 +1,4 @@
+import { betModel } from "../models/bet.model.js";
 import { rouletteModel } from "../models/roulette.model.js";
 
 // Creación de la ruleta
@@ -66,14 +67,14 @@ export const openRouletteById = async (request, response) => {
     try {
         const idForUpdate = request.params.id;
         const openRoulette = await rouletteModel.findOneAndUpdate(
-            { 
-                _id: idForUpdate, 
-                status: "CERRADA" 
+            {
+                _id: idForUpdate,
+                status: "CERRADA"
             },
             {
                 status: "ABIERTA",
             },
-            { new: true } 
+            { new: true }
         );
         if (!openRoulette) {
             const existRoulette = await rouletteModel.findById(idForUpdate);
@@ -108,28 +109,31 @@ export const closeRouletteById = async (request, response) => {
             return Math.floor(Math.random() * 37);
         }
         const determineWinningColor = (number) => {
-            if(number === 0){
+            if (number === 0) {
                 return "VERDE";
             }
-            if(number % 2 === 0){
+            if (number % 2 === 0) {
                 return "ROJO";
             }
             return "NEGRO";
         }
+        const payNumber = 5;
+        const payColor = 1.8;
 
         const idForUpdate = request.params.id;
         const winningNumber = generateWinningNumber();
         const winningColor = determineWinningColor(winningNumber);
         const colorForPayout = (winningNumber === 0) ? null : winningColor;
         const closeRoulette = await rouletteModel.findOneAndUpdate(
-            { 
-                _id: idForUpdate, 
+            {
+                _id: idForUpdate,
                 status: "ABIERTA"
             },
             {
                 status: "CERRADA",
                 number: winningNumber,
-                color: colorForPayout
+                color: colorForPayout,
+                closeDate: Date.now()
             },
             { new: true }
         );
@@ -146,11 +150,48 @@ export const closeRouletteById = async (request, response) => {
                 "roulette": closeRoulette
             });
         }
+        const pendingBets = await betModel.find({
+            rouletteId: idForUpdate,
+            status: "PENDIENTE"
+        });
+
+        const betsResults = [];
+
+        for (const bet of pendingBets) {
+            let winning = 0;
+            let status = "PERDIDA";
+            const amountBet = bet.amountBet;
+
+            if (bet.typeBet === "NUMERO") {
+                if (parseInt(bet.valueBet) === winningNumber) {
+                    winning = amountBet * (payNumber + 1);
+                    status = "GANADA";
+                }
+            } else if (bet.typeBet === "COLOR") {
+                if (bet.valueBet === colorForPayout) {
+                    winning = amountBet * (payColor + 1);
+                    status = "GANADA";
+                }
+            }
+            await betModel.updateOne(
+                { _id: bet._id },
+                { status: status, winnings: winning }
+            );
+            betsResults.push({
+                betId: bet._id,
+                type: bet.typeBet,
+                amount: amountBet,
+                status: status,
+                winning: winning
+            });
+        }
         return response.status(200).json({
             "message": "Ruleta cerrada exitosamente, lista para recibir apuestas.",
             "status": closeRoulette.status,
             "winNumber": closeRoulette.number,
-            "winColor": closeRoulette.color
+            "winColor": closeRoulette.color,
+            "totalBets": betsResults.length,
+            "resoults": betsResults
         });
     } catch (error) {
         return response.status(500).json({

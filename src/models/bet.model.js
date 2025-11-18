@@ -5,16 +5,16 @@ const betSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    amountBet: {
+    amountBet: { //cantidad monetaria apostada
         type: Number,
         required: true
     },
     typeBet: {
         type: String,
         required: true,
-        enum: ['NUMERO', 'COLOR', 'COMBINADA']
+        enum: ["NUMERO", "COLOR"]
     },
-    ValueBet: {
+    valueBet: { //número o color apostado
         type: String,
         required: true
     },
@@ -23,8 +23,8 @@ const betSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['PENDIENTE', 'GANADA', 'PERDIDA'],
-        default: 'PENDIENTE'
+        enum: ["PENDIENTE", "GANADA", "PERDIDA"],
+        default: "PENDIENTE"
     },
     betDate: {
         type: Date,
