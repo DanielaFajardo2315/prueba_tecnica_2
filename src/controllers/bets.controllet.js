@@ -26,7 +26,7 @@ export const postBet = async (request, response) => {
 
         if (amountBet <= 0 || amountBet > amountMax) {
             errors.push({
-                "error": `Monto inválido. El monto debe ser mayor que ${amountMax}`
+                "error": `Monto inválido. El monto debe ser mayor que 0 y menor que ${amountMax}`
             });
             isValid = false;
         }

@@ -6,7 +6,7 @@ export const rouletteRouter = express.Router();
 rouletteRouter.post("/", postRoulette);
 // GET
 rouletteRouter.get("/", getAllRoulettes);
-rouletteRouter.get("/", getRoulettesByStatus);
+rouletteRouter.get("/abiertas", getRoulettesByStatus);
 // PUT
 rouletteRouter.put("/abrir/:id", openRouletteById);
 rouletteRouter.put("/cerrar/:id", closeRouletteById);

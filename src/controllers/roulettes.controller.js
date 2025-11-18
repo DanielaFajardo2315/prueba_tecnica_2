@@ -186,7 +186,7 @@ export const closeRouletteById = async (request, response) => {
             });
         }
         return response.status(200).json({
-            "message": "Ruleta cerrada exitosamente, lista para recibir apuestas.",
+            "message": "Ruleta cerrada exitosamente, listo para entregar las ganancias.",
             "status": closeRoulette.status,
             "winNumber": closeRoulette.number,
             "winColor": closeRoulette.color,

@@ -2,7 +2,7 @@
   "name": "prueba_tecnica_2",
   "version": "1.0.0",
   "description": "Proyecto para funcionamiento de una ruleta de casino",
-  "main": "index.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "node app.js",
